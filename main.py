@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import date
 from typing import Optional
 
 import uvicorn
@@ -9,8 +9,6 @@ from starlette.requests import Request
 from elasticsearch import AsyncElasticsearch
 
 MAPPING_FOR_INDEX = {
-    "mappings":
-        {
             "properties": {
                 "name": {
                     "type": "text"
@@ -26,7 +24,6 @@ MAPPING_FOR_INDEX = {
                 }
             }
         }
-}
 
 
 async def ping() -> dict:
@@ -35,7 +32,7 @@ async def ping() -> dict:
 
 async def create_index(request: Request) -> dict:
     elastic_client = request.app.state.elastic_client
-    await elastic_client.indices.create(index="users", body=MAPPING_FOR_INDEX)
+    await elastic_client.indices.create(index="users", mappings=MAPPING_FOR_INDEX)
     return {"Success": True}
 
 
