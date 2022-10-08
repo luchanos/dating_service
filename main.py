@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 
 import uvicorn
@@ -48,13 +48,13 @@ async def delete_index(request: Request) -> dict:
 class CreateUserRequest(BaseModel):
     name: str
     surname: Optional[str]
-    date_of_birth: Optional[datetime]
+    date_of_birth: Optional[date]
     interests: Optional[list[str]]
 
 
 async def create_user(request: Request, body: CreateUserRequest) -> dict:
     elastic_client = request.app.state.elastic_client
-    await elastic_client.index(index="users", document=body.dict())
+    res = await elastic_client.index(index="users", document=body.dict())
     return {"Success": True}
 
 
