@@ -1,12 +1,15 @@
-from datetime import date
-from typing import Optional
-
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.routing import APIRoute
-from pydantic import BaseModel
 from starlette.requests import Request
 from elasticsearch import AsyncElasticsearch
+from logging import getLogger, StreamHandler
+
+from models import CreateUserRequest
+
+logger = getLogger(__name__)
+logger.addHandler(StreamHandler())
+logger.setLevel("INFO")
 
 MAPPING_FOR_INDEX = {
             "properties": {
@@ -42,17 +45,11 @@ async def delete_index(request: Request) -> dict:
     return {"Success": True}
 
 
-class CreateUserRequest(BaseModel):
-    name: str
-    surname: Optional[str]
-    date_of_birth: Optional[date]
-    interests: Optional[list[str]]
-
-
 async def create_user(request: Request, body: CreateUserRequest) -> dict:
     elastic_client = request.app.state.elastic_client
     res = await elastic_client.index(index="users", document=body.dict())
-    return {"Success": True}
+    logger.info(res)
+    return {"Success": True, "result": res}
 
 
 routes = [
