@@ -45,26 +45,32 @@ MAPPING_FOR_INDEX = {
 
 
 async def ping() -> dict:
-    return {"Success": True}
+    return {"success": True}
 
 
 async def create_index(request: Request) -> dict:
-    elastic_client = request.app.state.elastic_client
+    elastic_client: AsyncElasticsearch = request.app.state.elastic_client
     await elastic_client.indices.create(index="users", mappings=MAPPING_FOR_INDEX)
-    return {"Success": True}
+    return {"success": True}
 
 
 async def delete_index(request: Request) -> dict:
-    elastic_client = request.app.state.elastic_client
+    elastic_client: AsyncElasticsearch = request.app.state.elastic_client
     await elastic_client.indices.delete(index="users")
-    return {"Success": True}
+    return {"success": True}
 
 
 async def create_user(request: Request, body: CreateUserRequest) -> dict:
-    elastic_client = request.app.state.elastic_client
+    elastic_client: AsyncElasticsearch = request.app.state.elastic_client
     res = await elastic_client.index(index="users", document=body.dict())
     logger.info(res)
-    return {"Success": True, "result": res}
+    return {"success": True, "result": res}
+
+
+async def get_all_users(request: Request):
+    elastic_client: AsyncElasticsearch = request.app.state.elastic_client
+    res = await elastic_client.search(index="users", query={"match_all": {}})
+    return {"success": True, "result": res}
 
 
 routes = [
@@ -72,6 +78,7 @@ routes = [
     APIRoute(path="/create_index", endpoint=create_index, methods=["GET"]),
     APIRoute(path="/delete_index", endpoint=delete_index, methods=["GET"]),
     APIRoute(path="/create_user", endpoint=create_user, methods=["POST"]),
+    APIRoute(path="/get_all_users", endpoint=get_all_users, methods=["GET"])
 ]
 
 elastic_client = AsyncElasticsearch()
