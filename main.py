@@ -14,16 +14,31 @@ logger.setLevel("INFO")
 MAPPING_FOR_INDEX = {
             "properties": {
                 "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword"
+                        }
+                    }
                 },
                 "surname": {
-                    "type": "text"
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword"
+                        }
+                    }
                 },
                 "date_of_birth": {
                     "type": "date"
                 },
                 "interests": {
-                    "type": "text"
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword"
+                        }
+                    }
                 }
             }
         }
